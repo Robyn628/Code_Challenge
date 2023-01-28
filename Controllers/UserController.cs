@@ -58,5 +58,8 @@ namespace Code_Challenge.Controllers
 
             return View("Details", userModel.UserId);
         }
+
+
+        
     }
 }
