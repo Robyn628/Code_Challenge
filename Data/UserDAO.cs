@@ -14,20 +14,19 @@ namespace Code_Challenge.Data
         //Get all data
         public List<UserModel> GetAll()
         {
-            List<UserModel> returnList = new List<UserModel> ();
+            List<UserModel> returnList = new List<UserModel>();
 
             //access database
 
             using (SqlConnection con = new SqlConnection(connectionString))
             {
-                string sqlQuery = "SELECT * FROM dbo.TestData";
+                string sqlQuery = "SELECT * FROM [dbo].[TestData]";
 
                 SqlCommand cmd = new SqlCommand(sqlQuery, con);
-
                 con.Open();
                 SqlDataReader reader = cmd.ExecuteReader();
 
-                if(reader.HasRows)
+                if (reader.HasRows)
                 {
                     while (reader.Read())
                     {
@@ -43,17 +42,17 @@ namespace Code_Challenge.Data
             }
         }
 
-        public UserModel GetOne(int Id)
+        public UserModel GetOne(int userId)
         {
             //access database
 
             using (SqlConnection con = new SqlConnection(connectionString))
             {
-                string sqlQuery = "SELECT * FROM dbo.TestData WHERE Id = @id";
+                string sqlQuery = "SELECT * FROM [dbo].[TestData] WHERE ID = @ID";
 
                 SqlCommand cmd = new SqlCommand(sqlQuery, con);
 
-                cmd.Parameters.Add("@Id", System.Data.SqlDbType.VarChar, 40).Value = Id;
+                cmd.Parameters.Add("@ID", System.Data.SqlDbType.VarChar, 40).Value = userId;
 
                 con.Open();
                 SqlDataReader reader = cmd.ExecuteReader();
@@ -73,29 +72,56 @@ namespace Code_Challenge.Data
             }
         }
 
-        //Create
-        public int Create(UserModel userModel)
+        //Create & Edit
+        public int CreateUpdate(UserModel userModel)
         {
             using (SqlConnection con = new SqlConnection(connectionString))
             {
-                string sqlQuery = "INSERT INTO dbo.TestData VALUES (@UserName, @Password)";
+                string sqlQuery = "";
+
+                if (userModel.UserId <= 0)
+                {
+                    sqlQuery = "INSERT INTO [dbo].[TestData] VALUES (@UserName, @Password)";
+                }
+                else
+                {
+                    sqlQuery = "UPDATE [dbo].[TestData] SET Name = @UserName, Password = @Password WHERE ID = @ID";
+                }
 
                 SqlCommand cmd = new SqlCommand(sqlQuery, con);
 
+                cmd.Parameters.Add("@ID", System.Data.SqlDbType.VarChar, 40).Value = userModel.UserId;
                 cmd.Parameters.Add("@UserName", System.Data.SqlDbType.VarChar, 40).Value = userModel.Username;
                 cmd.Parameters.Add("@Password", System.Data.SqlDbType.VarChar, 20).Value = userModel.Password;
 
                 con.Open();
                 int newID = cmd.ExecuteNonQuery();
-                       
-                return newID;     
-            }           
-            
+
+                return newID;
+            }
+
         }
 
         //Delete
 
+        internal int Delete(int userId)
+        {
+            using (SqlConnection con = new SqlConnection(connectionString))
+            {
+                string sqlQuery = "DELETE FROM [dbo].[TestData] WHERE ID = @ID";
 
-        //Edit
+
+
+                SqlCommand cmd = new SqlCommand(sqlQuery, con);
+
+                cmd.Parameters.Add("@ID", System.Data.SqlDbType.VarChar, 40).Value = userId;
+
+                con.Open();
+
+                int deleteID = cmd.ExecuteNonQuery();
+
+                return deleteID;
+            }
+        }
     }
 }

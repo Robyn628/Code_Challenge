@@ -19,10 +19,10 @@ namespace Code_Challenge.Controllers
             return View("Index", user);
         }
 
-        public IActionResult Details(int Id)         // URL = /user/Details/1
+        public IActionResult Details(int userId)         // URL = /user/Details/1
         {
             UserDAO userDAO = new UserDAO();
-            UserModel user = userDAO.GetOne(Id);
+            UserModel user = userDAO.GetOne(userId);
 
             return View("Details", user);
         }
@@ -32,22 +32,31 @@ namespace Code_Challenge.Controllers
         {
             return View("UserForm");
         }
+
+        public IActionResult Edit(int userId)
+        {
+            UserDAO userDAO = new UserDAO();
+            UserModel user = userDAO.GetOne(userId);
+            return View("UserForm", user);
+        }
+        public IActionResult Delete(int userId)
+        {
+            UserDAO userDAO = new UserDAO();
+            userDAO.Delete(userId);
+
+            List<UserModel> user = userDAO.GetAll();
+
+            return View("Index", user);
+        }
+
+
+        [HttpPost]
         public IActionResult ProcessCreate(UserModel userModel)
         {
             UserDAO userDAO = new UserDAO();
-            userDAO.Create(userModel);
+            userDAO.CreateUpdate(userModel);
 
             return View("Details", userModel.UserId);
-        }
-
-        public IActionResult Edit()
-        {
-            return View();
-        }
-
-        public IActionResult Delete()
-        {
-            return View();
         }
     }
 }
